@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Portal",
+    "description": "小游戏门户首页，统一承载当前已上线与后续待接入的小游戏入口。",
+    "path": "/portal/index.html",
+    "category": "Portal",
+    "status": "online"
+  },
+  {
+    "name": "Weiqi",
+    "description": "围棋小游戏，支持多棋盘尺寸、人机对战、复盘与 SGF 导入导出。",
+    "path": "/weiqi/index.html",
+    "category": "Board Game",
+    "status": "online"
+  },
+  {
+    "name": "Xiangqi",
+    "description": "中国象棋小游戏，支持双人对弈、人机对战、残局库和棋谱导出。",
+    "path": "/xiangqi/index.html",
+    "category": "Board Game",
+    "status": "online"
+  }
+]
