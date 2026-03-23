@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>中国象棋对弈</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">Chinese Chess Strategy Arena</p>
+        <h1>中国象棋</h1>
+        <p class="intro">
+          一个纯前端的中国象棋小游戏，支持双人对弈、人机对战、残局库切换、棋谱导出，以及标准走子规则、将军判定与着法记录。
+        </p>
+      </section>
+
+      <section class="game-layout">
+        <div class="board-panel">
+          <div class="board-header">
+            <div>
+              <p class="panel-label">对局棋盘</p>
+              <h2>楚河汉界</h2>
+            </div>
+            <a class="portal-link" href="../portal/index.html">返回门户</a>
+          </div>
+          <div class="board-frame">
+            <div id="board" class="board" aria-label="中国象棋棋盘"></div>
+          </div>
+        </div>
+
+        <aside class="sidebar">
+          <section class="status-card">
+            <div id="turnBadge" class="turn-badge">红方行棋</div>
+            <h2 id="statusText">请选择一个棋子开始对局</h2>
+            <p id="detailText">红方先行。点击己方棋子可查看当前合法走位。</p>
+          </section>
+
+          <section class="settings-card">
+            <div class="card-title-row">
+              <h3>对局设置</h3>
+              <span>模式与残局</span>
+            </div>
+            <div class="setting-group">
+              <label class="setting-label" for="modeSelect">对弈模式</label>
+              <select id="modeSelect" class="setting-select">
+                <option value="pvp">双人对弈</option>
+                <option value="ai">人机对战</option>
+              </select>
+            </div>
+            <div class="setting-group">
+              <label class="setting-label" for="aiLevelSelect">AI 难度</label>
+              <select id="aiLevelSelect" class="setting-select">
+                <option value="easy">轻松</option>
+                <option value="medium" selected>均衡</option>
+                <option value="hard">进阶</option>
+              </select>
+            </div>
+            <div class="setting-group">
+              <label class="setting-label" for="presetSelect">残局库</label>
+              <select id="presetSelect" class="setting-select">
+                <option value="opening" selected>标准开局</option>
+                <option value="rook-mate">单车逼宫</option>
+                <option value="cannon-pressure">双炮施压</option>
+                <option value="endgame-duel">残局对杀</option>
+              </select>
+            </div>
+            <button id="loadPresetButton" class="action-button secondary">载入当前局面</button>
+          </section>
+
+          <section class="stats-card">
+            <div class="card-title-row">
+              <h3>对局信息</h3>
+              <span>实时更新</span>
+            </div>
+            <div class="stat-row">
+              <span>当前回合</span>
+              <strong id="turnText">红方</strong>
+            </div>
+            <div class="stat-row">
+              <span>总手数</span>
+              <strong id="moveCount">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>红方被吃</span>
+              <strong id="redLost">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>黑方被吃</span>
+              <strong id="blackLost">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>当前模式</span>
+              <strong id="modeText">双人</strong>
+            </div>
+          </section>
+
+          <section class="controls-card">
+            <button id="undoButton" class="action-button secondary">悔棋</button>
+            <button id="resetButton" class="action-button">重新开始</button>
+            <button id="exportButton" class="action-button secondary">导出棋谱</button>
+          </section>
+
+          <section class="export-card">
+            <div class="card-title-row">
+              <h3>棋谱导出</h3>
+              <span>TXT / JSON</span>
+            </div>
+            <p id="exportHint" class="micro-copy">导出会包含当前残局、对弈模式和完整着法记录。</p>
+            <div class="controls-card compact">
+              <button id="copyExportButton" class="action-button secondary">复制文本</button>
+              <button id="downloadExportButton" class="action-button secondary">下载 JSON</button>
+            </div>
+            <textarea id="exportOutput" class="export-output" readonly></textarea>
+          </section>
+
+          <section class="rules-card">
+            <div class="card-title-row">
+              <h3>规则说明</h3>
+              <span>标准走法</span>
+            </div>
+            <ul>
+              <li>红方先行，双方轮流走子。</li>
+              <li>马走日、象走田、士走斜、车走直、炮隔山打子、兵卒过河后可横走。</li>
+              <li>将帅只能在九宫内直走，不允许出现“将帅照面”的非法局面。</li>
+              <li>系统会自动过滤会让己方被将军的走法，并在无合法着法时判定胜负。</li>
+              <li>人机模式下玩家执红，AI 执黑，可搭配残局库直接开始特定局面。</li>
+            </ul>
+          </section>
+
+          <section class="history-card">
+            <div class="card-title-row">
+              <h3>着法记录</h3>
+              <span id="historyHint">最新着法在最上方</span>
+            </div>
+            <ol id="historyList" class="history-list"></ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

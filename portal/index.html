@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>小游戏门户</title>
+    <style>
+      :root {
+        --bg: #f4efe5;
+        --bg-deep: #e2d3bd;
+        --panel: rgba(255, 250, 243, 0.84);
+        --panel-strong: rgba(255, 247, 235, 0.96);
+        --panel-border: rgba(102, 62, 23, 0.12);
+        --text: #312114;
+        --muted: #7a6657;
+        --accent: #8a4f20;
+        --accent-strong: #6a3511;
+        --accent-soft: #cf9a5b;
+        --success: #2e7553;
+        --shadow: 0 24px 60px rgba(86, 55, 26, 0.16);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-family: "STSong", "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+        background:
+          radial-gradient(circle at top left, rgba(207, 154, 91, 0.28), transparent 30%),
+          radial-gradient(circle at right 20%, rgba(151, 87, 34, 0.14), transparent 22%),
+          linear-gradient(135deg, var(--bg) 0%, #efe4d3 48%, var(--bg-deep) 100%);
+      }
+
+      a,
+      button {
+        font: inherit;
+      }
+
+      button {
+        border: none;
+        cursor: pointer;
+      }
+
+      .shell {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 44px;
+      }
+
+      .topbar,
+      .hero-panel,
+      .featured-card,
+      .section-head,
+      .game-card,
+      .roadmap-card,
+      .footer-card {
+        border: 1px solid var(--panel-border);
+        background: var(--panel);
+        backdrop-filter: blur(14px);
+        box-shadow: var(--shadow);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 16px 20px;
+        border-radius: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 52px;
+        height: 52px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        font-size: 1.25rem;
+        color: #fff8ef;
+        background:
+          linear-gradient(160deg, rgba(191, 125, 52, 0.95), rgba(106, 53, 17, 0.95));
+      }
+
+      .brand h1,
+      .brand p,
+      .hero-copy h2,
+      .hero-copy p,
+      .section-head h3,
+      .section-head p,
+      .featured-copy h3,
+      .featured-copy p,
+      .game-card h4,
+      .game-card p,
+      .roadmap-card h4,
+      .roadmap-card p,
+      .footer-card p {
+        margin: 0;
+      }
+
+      .brand h1 {
+        font-size: 1.18rem;
+      }
+
+      .brand p,
+      .topbar-nav a,
+      .hero-copy p,
+      .section-head p,
+      .featured-copy p,
+      .game-card p,
+      .meta-strip span,
+      .roadmap-card p,
+      .footer-card p {
+        color: var(--muted);
+      }
+
+      .topbar-nav {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .topbar-nav a {
+        text-decoration: none;
+        padding: 10px 14px;
+        border-radius: 999px;
+        transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+      }
+
+      .topbar-nav a:hover,
+      .filter-button:hover,
+      .game-link:hover,
+      .secondary-link:hover {
+        transform: translateY(-1px);
+      }
+
+      .topbar-nav a:hover {
+        background: rgba(138, 79, 32, 0.1);
+        color: var(--accent);
+      }
+
+      .hero-panel {
+        margin-top: 20px;
+        padding: 34px;
+        border-radius: 34px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+        gap: 24px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .hero-panel::after {
+        content: "";
+        position: absolute;
+        inset: auto -120px -120px auto;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(207, 154, 91, 0.22), transparent 65%);
+      }
+
+      .eyebrow,
+      .pill,
+      .card-tag,
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+      }
+
+      .eyebrow {
+        padding: 8px 14px;
+        font-size: 0.88rem;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        background: rgba(138, 79, 32, 0.1);
+      }
+
+      .hero-copy h2 {
+        margin-top: 18px;
+        font-size: clamp(2.4rem, 5vw, 4.8rem);
+        line-height: 1.02;
+      }
+
+      .hero-copy p {
+        margin-top: 16px;
+        max-width: 700px;
+        font-size: 1.06rem;
+        line-height: 1.85;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .pill,
+      .hero-stat,
+      .featured-card,
+      .game-card,
+      .roadmap-card,
+      .footer-card {
+        border-radius: 28px;
+      }
+
+      .hero-stat {
+        padding: 16px 18px;
+        background: rgba(255, 250, 243, 0.58);
+        border: 1px solid rgba(102, 62, 23, 0.08);
+      }
+
+      .hero-stat strong,
+      .roadmap-card strong {
+        display: block;
+        font-size: 1.5rem;
+        color: var(--accent-strong);
+      }
+
+      .hero-stat span,
+      .roadmap-card span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .hero-side {
+        display: grid;
+        gap: 16px;
+        align-content: start;
+      }
+
+      .featured-card {
+        padding: 24px;
+        background:
+          linear-gradient(145deg, rgba(255, 247, 235, 0.98), rgba(243, 230, 210, 0.92));
+      }
+
+      .featured-visual {
+        min-height: 184px;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        background:
+          linear-gradient(135deg, rgba(122, 72, 24, 0.9), rgba(205, 154, 88, 0.92));
+      }
+
+      .featured-visual::before,
+      .featured-visual::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+      }
+
+      .featured-visual::before {
+        width: 180px;
+        height: 180px;
+        left: -20px;
+        top: 42px;
+        background: rgba(255, 244, 226, 0.15);
+      }
+
+      .featured-visual::after {
+        width: 118px;
+        height: 118px;
+        right: 18px;
+        top: 20px;
+        background: rgba(59, 34, 12, 0.24);
+      }
+
+      .stones {
+        position: absolute;
+        inset: 0;
+      }
+
+      .stone {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        box-shadow: 0 14px 24px rgba(23, 13, 4, 0.2);
+      }
+
+      .stone.black {
+        background: radial-gradient(circle at 30% 28%, #5b5b5b, #101010 68%);
+      }
+
+      .stone.white {
+        background: radial-gradient(circle at 30% 28%, #ffffff, #d8d1c8 70%);
+      }
+
+      .stone.one {
+        left: 26px;
+        bottom: 26px;
+      }
+
+      .stone.two {
+        left: 104px;
+        top: 42px;
+      }
+
+      .stone.three {
+        right: 48px;
+        bottom: 38px;
+      }
+
+      .grid-lines {
+        position: absolute;
+        inset: 22px;
+        border: 1px solid rgba(72, 40, 11, 0.2);
+        background-image:
+          linear-gradient(rgba(72, 40, 11, 0.2) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(72, 40, 11, 0.2) 1px, transparent 1px);
+        background-size: 25% 25%;
+      }
+
+      .featured-copy {
+        margin-top: 20px;
+      }
+
+      .featured-copy h3 {
+        font-size: 1.55rem;
+      }
+
+      .featured-copy p {
+        margin-top: 12px;
+        line-height: 1.8;
+      }
+
+      .status-badge {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        color: var(--success);
+        background: rgba(46, 117, 83, 0.12);
+      }
+
+      .section {
+        margin-top: 26px;
+      }
+
+      .section-head {
+        padding: 22px 24px;
+        border-radius: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .section-head h3 {
+        font-size: 1.5rem;
+      }
+
+      .filters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-button {
+        padding: 11px 16px;
+        border-radius: 999px;
+        color: var(--muted);
+        background: rgba(255, 250, 243, 0.76);
+        border: 1px solid rgba(102, 62, 23, 0.08);
+        transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+      }
+
+      .filter-button.is-active {
+        color: #fff7ef;
+        background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+      }
+
+      .games-grid,
+      .roadmap-grid {
+        display: grid;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .games-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .game-card {
+        position: relative;
+        padding: 22px;
+        background: var(--panel-strong);
+        transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+      }
+
+      .game-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 28px 70px rgba(86, 55, 26, 0.2);
+      }
+
+      .game-card[hidden] {
+        display: none;
+      }
+
+      .card-art {
+        min-height: 148px;
+        border-radius: 22px;
+        margin-bottom: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .art-go {
+        background:
+          radial-gradient(circle at 25% 30%, rgba(255, 245, 228, 0.35), transparent 24%),
+          linear-gradient(135deg, #9d6026 0%, #d9aa69 100%);
+      }
+
+      .art-xiangqi {
+        background:
+          radial-gradient(circle at 75% 22%, rgba(255, 255, 255, 0.2), transparent 20%),
+          linear-gradient(135deg, #8f3a26 0%, #d18862 100%);
+      }
+
+      .art-mahjong {
+        background:
+          radial-gradient(circle at 28% 28%, rgba(255, 255, 255, 0.24), transparent 18%),
+          linear-gradient(135deg, #2f6858 0%, #77a88c 100%);
+      }
+
+      .art-billiards {
+        background:
+          radial-gradient(circle at 72% 22%, rgba(255, 255, 255, 0.16), transparent 16%),
+          linear-gradient(135deg, #1d5b46 0%, #2b9574 100%);
+      }
+
+      .art-gobang {
+        background:
+          radial-gradient(circle at 24% 24%, rgba(255, 255, 255, 0.18), transparent 18%),
+          linear-gradient(135deg, #4e4e55 0%, #8f96a3 100%);
+      }
+
+      .art-overlay {
+        position: absolute;
+        inset: 0;
+      }
+
+      .art-overlay.board {
+        inset: 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(79, 47, 16, 0.22);
+        background-image:
+          linear-gradient(rgba(79, 47, 16, 0.2) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(79, 47, 16, 0.2) 1px, transparent 1px);
+        background-size: 25% 25%;
+      }
+
+      .art-chip,
+      .art-ball,
+      .art-piece {
+        position: absolute;
+        border-radius: 50%;
+      }
+
+      .art-chip {
+        width: 44px;
+        height: 44px;
+        background: radial-gradient(circle at 30% 28%, #fff, #dbcfc0 70%);
+        box-shadow: 0 14px 20px rgba(26, 16, 9, 0.15);
+      }
+
+      .art-piece {
+        width: 56px;
+        height: 56px;
+        display: grid;
+        place-items: center;
+        font-size: 1.25rem;
+        color: #fff4ea;
+        background: radial-gradient(circle at 30% 28%, rgba(255, 196, 143, 0.5), rgba(135, 44, 24, 0.95) 74%);
+        box-shadow: 0 14px 20px rgba(39, 11, 4, 0.18);
+      }
+
+      .art-ball {
+        width: 44px;
+        height: 44px;
+        box-shadow: 0 12px 18px rgba(7, 25, 18, 0.18);
+      }
+
+      .art-ball.one {
+        left: 24px;
+        bottom: 24px;
+        background: radial-gradient(circle at 30% 28%, #fffbfb, #d3d3d3 72%);
+      }
+
+      .art-ball.two {
+        right: 36px;
+        top: 22px;
+        background: radial-gradient(circle at 30% 28%, #ffe072, #c68d0e 72%);
+      }
+
+      .art-ball.three {
+        left: 92px;
+        top: 34px;
+        background: radial-gradient(circle at 30% 28%, #f1a7aa, #b63039 72%);
+      }
+
+      .card-tag {
+        padding: 6px 10px;
+        font-size: 0.82rem;
+        background: rgba(138, 79, 32, 0.1);
+        color: var(--accent);
+      }
+
+      .meta-strip {
+        margin-top: 14px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .meta-strip span {
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: rgba(138, 79, 32, 0.07);
+        font-size: 0.88rem;
+      }
+
+      .game-card h4 {
+        margin-top: 16px;
+        font-size: 1.4rem;
+      }
+
+      .game-card p {
+        margin-top: 10px;
+        line-height: 1.76;
+        min-height: 84px;
+      }
+
+      .card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .game-link,
+      .secondary-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 999px;
+        text-decoration: none;
+        transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+      }
+
+      .game-link {
+        color: #fff7ef;
+        background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+      }
+
+      .secondary-link {
+        color: var(--accent);
+        background: rgba(138, 79, 32, 0.1);
+      }
+
+      .roadmap-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .roadmap-card {
+        padding: 22px;
+      }
+
+      .roadmap-card h4 {
+        margin-top: 14px;
+        font-size: 1.26rem;
+      }
+
+      .roadmap-card p {
+        margin-top: 10px;
+        line-height: 1.72;
+      }
+
+      .footer-card {
+        margin-top: 18px;
+        padding: 18px 22px;
+      }
+
+      .footer-card strong {
+        color: var(--accent-strong);
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        animation: rise 640ms ease forwards;
+      }
+
+      .delay-1 {
+        animation-delay: 60ms;
+      }
+
+      .delay-2 {
+        animation-delay: 120ms;
+      }
+
+      .delay-3 {
+        animation-delay: 180ms;
+      }
+
+      @keyframes rise {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 1060px) {
+        .hero-panel,
+        .games-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .roadmap-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          width: min(100% - 20px, 1240px);
+          padding-top: 16px;
+        }
+
+        .topbar,
+        .section-head {
+          padding: 16px;
+        }
+
+        .hero-panel,
+        .featured-card,
+        .game-card,
+        .roadmap-card,
+        .footer-card {
+          border-radius: 24px;
+        }
+
+        .hero-panel {
+          padding: 22px;
+        }
+
+        .hero-stats {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-copy h2 {
+          font-size: 2.4rem;
+        }
+
+        .card-actions {
+          flex-direction: column;
+        }
+
+        .game-link,
+        .secondary-link {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar reveal">
+        <div class="brand">
+          <div class="brand-mark">弈</div>
+          <div>
+            <h1>小游戏门户</h1>
+            <p>统一承载棋类与休闲小游戏的入口首页</p>
+          </div>
+        </div>
+        <nav class="topbar-nav" aria-label="页面导航">
+          <a href="#games">游戏大厅</a>
+          <a href="#roadmap">开发规划</a>
+          <a href="../weiqi/index.html">进入围棋</a>
+        </nav>
+      </header>
+
+      <section class="hero-panel reveal delay-1">
+        <div class="hero-copy">
+          <span class="eyebrow">Arcade Lobby For Mini Games</span>
+          <h2>把所有小游戏收进一个更像样的入口大厅</h2>
+          <p>
+            这里不是单一游戏页面，而是后续所有小游戏的统一门户。当前已接入围棋，接下来可以继续扩展中国象棋、麻将、台球、五子棋等项目，并保持同一套入口体验、分类浏览和视觉氛围。
+          </p>
+          <div class="hero-actions">
+            <a class="game-link" href="../weiqi/index.html">立即进入围棋</a>
+            <a class="secondary-link" href="#games">查看全部游戏</a>
+          </div>
+          <div class="hero-stats" aria-label="门户概览">
+            <div class="hero-stat">
+              <strong>1</strong>
+              <span>当前已上线小游戏</span>
+            </div>
+            <div class="hero-stat">
+              <strong>4</strong>
+              <span>已预留待接入项目</span>
+            </div>
+            <div class="hero-stat">
+              <strong>1</strong>
+              <span>统一门户首页入口</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-side">
+          <article class="featured-card">
+            <div class="featured-visual" aria-hidden="true">
+              <div class="grid-lines"></div>
+              <div class="stones">
+                <div class="stone black one"></div>
+                <div class="stone white two"></div>
+                <div class="stone black three"></div>
+              </div>
+            </div>
+            <div class="featured-copy">
+              <span class="status-badge">已上线 · 可直接游玩</span>
+              <h3>本期主推：围棋</h3>
+              <p>
+                已具备多棋盘尺寸、人机对战、规则切换、自动数目、SGF 导入导出与复盘等完整能力，是当前门户里的核心游戏入口。
+              </p>
+            </div>
+          </article>
+        </aside>
+      </section>
+
+      <section class="section" id="games">
+        <div class="section-head reveal delay-2">
+          <div>
+            <h3>游戏大厅</h3>
+            <p>支持按状态和类型筛选，后续新增小游戏时只需要继续补卡片即可。</p>
+          </div>
+          <div class="filters" aria-label="游戏筛选">
+            <button class="filter-button is-active" data-filter="all">全部</button>
+            <button class="filter-button" data-filter="online">已上线</button>
+            <button class="filter-button" data-filter="board">棋类策略</button>
+            <button class="filter-button" data-filter="casual">休闲娱乐</button>
+          </div>
+        </div>
+
+        <div class="games-grid">
+          <article class="game-card reveal delay-1" data-status="online" data-type="board">
+            <div class="card-art art-go" aria-hidden="true">
+              <div class="art-overlay board"></div>
+              <div class="stone black one"></div>
+              <div class="stone white two"></div>
+              <div class="stone black three"></div>
+            </div>
+            <span class="card-tag">已上线</span>
+            <div class="meta-strip">
+              <span>棋类策略</span>
+              <span>双人 / 人机</span>
+              <span>可复盘</span>
+            </div>
+            <h4>围棋</h4>
+            <p>
+              当前门户中的第一个正式小游戏入口，适合作为后续棋类产品的样板页。已经具备较完整的单页游戏体验。
+            </p>
+            <div class="card-actions">
+              <a class="game-link" href="../weiqi/index.html">进入游戏</a>
+              <a class="secondary-link" href="../weiqi/weiqi-doc.md">查看说明</a>
+            </div>
+          </article>
+
+          <article class="game-card reveal delay-2" data-status="online" data-type="board">
+            <div class="card-art art-xiangqi" aria-hidden="true">
+              <div class="art-piece" style="left: 26px; bottom: 24px;">帅</div>
+              <div class="art-piece" style="right: 28px; top: 26px;">車</div>
+            </div>
+            <span class="card-tag">已上线</span>
+            <div class="meta-strip">
+              <span>棋类策略</span>
+              <span>楚河汉界</span>
+              <span>残局扩展</span>
+            </div>
+            <h4>中国象棋</h4>
+            <p>
+              已接入一个可直接游玩的中国象棋页面，支持标准走子规则、将军判定、悔棋、重开和着法记录。
+            </p>
+            <div class="card-actions">
+              <a class="game-link" href="../xiangqi/index.html">进入游戏</a>
+              <a class="secondary-link" href="../xiangqi/xiangqi-doc.md">查看说明</a>
+            </div>
+          </article>
+
+          <article class="game-card reveal delay-3" data-status="coming" data-type="casual">
+            <div class="card-art art-mahjong" aria-hidden="true">
+              <div class="art-chip" style="left: 24px; bottom: 22px;"></div>
+              <div class="art-chip" style="left: 88px; top: 28px;"></div>
+              <div class="art-chip" style="right: 24px; bottom: 30px;"></div>
+            </div>
+            <span class="card-tag">即将上线</span>
+            <div class="meta-strip">
+              <span>休闲娱乐</span>
+              <span>牌桌氛围</span>
+              <span>玩法扩展</span>
+            </div>
+            <h4>麻将</h4>
+            <p>
+              可作为更偏社交与休闲的品类入口，后续可以按地方玩法拆分模块，逐步补齐规则和界面表现。
+            </p>
+            <div class="card-actions">
+              <a class="secondary-link" href="#roadmap">加入规划</a>
+            </div>
+          </article>
+
+          <article class="game-card reveal delay-1" data-status="coming" data-type="casual">
+            <div class="card-art art-billiards" aria-hidden="true">
+              <div class="art-ball one"></div>
+              <div class="art-ball two"></div>
+              <div class="art-ball three"></div>
+            </div>
+            <span class="card-tag">即将上线</span>
+            <div class="meta-strip">
+              <span>休闲竞技</span>
+              <span>物理碰撞</span>
+              <span>对战模式</span>
+            </div>
+            <h4>台球</h4>
+            <p>
+              更强调手感、轨迹和动画表现，加入后能让整个门户不只局限于传统棋类，也更像一个完整小游戏大厅。
+            </p>
+            <div class="card-actions">
+              <a class="secondary-link" href="#roadmap">加入规划</a>
+            </div>
+          </article>
+
+          <article class="game-card reveal delay-2" data-status="coming" data-type="board">
+            <div class="card-art art-gobang" aria-hidden="true">
+              <div class="art-overlay board"></div>
+              <div class="stone black one"></div>
+              <div class="stone white two"></div>
+              <div class="stone black" style="right: 42px; top: 38px;"></div>
+            </div>
+            <span class="card-tag">即将上线</span>
+            <div class="meta-strip">
+              <span>棋类策略</span>
+              <span>上手简单</span>
+              <span>适合快速对局</span>
+            </div>
+            <h4>五子棋</h4>
+            <p>
+              节奏更快，适合作为轻量级的即时对战项目，也能和围棋共享部分棋盘视觉语言与交互基础。
+            </p>
+            <div class="card-actions">
+              <a class="secondary-link" href="#roadmap">加入规划</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="roadmap">
+        <div class="section-head reveal delay-3">
+          <div>
+            <h3>后续扩展方向</h3>
+            <p>门户已经按“已上线 + 即将上线”组织好结构，后面继续加游戏时可以平滑扩容。</p>
+          </div>
+        </div>
+
+        <div class="roadmap-grid">
+          <article class="roadmap-card reveal delay-1">
+            <strong>01</strong>
+            <h4>统一入口规范</h4>
+            <p>
+              新增小游戏时沿用当前卡片结构，补充封面视觉、状态标记、玩法标签和跳转链接，就能稳定扩展门户内容。
+            </p>
+          </article>
+          <article class="roadmap-card reveal delay-2">
+            <strong>02</strong>
+            <h4>逐步接入更多游戏</h4>
+            <p>
+              先补中国象棋和五子棋这类同属棋盘型页面的项目，再加入麻将、台球等玩法差异更大的页面，扩展会更顺。
+            </p>
+          </article>
+          <article class="roadmap-card reveal delay-2">
+            <strong>03</strong>
+            <h4>增加数据与成就区</h4>
+            <p>
+              后续可以在门户层加入最近游玩、胜率统计、收藏游戏、继续上次对局等模块，让首页从展示页进化成真实大厅。
+            </p>
+          </article>
+          <article class="roadmap-card reveal delay-3">
+            <strong>04</strong>
+            <h4>统一主题语言</h4>
+            <p>
+              目前门户视觉已经和围棋页面保持了木质、棋盘、东方书卷感的关联，后续游戏也能沿这条主线继续延展。
+            </p>
+          </article>
+        </div>
+
+        <footer class="footer-card reveal delay-3">
+          <p>
+            <strong>当前接入方式：</strong>
+            围棋入口已链接到 `../weiqi/index.html`。后续只要新增对应目录和页面，再在这里补上卡片即可。
+          </p>
+        </footer>
+      </section>
+    </main>
+
+    <script>
+      const filterButtons = document.querySelectorAll(".filter-button");
+      const gameCards = document.querySelectorAll(".game-card");
+
+      const applyFilter = (filter) => {
+        gameCards.forEach((card) => {
+          const status = card.dataset.status;
+          const type = card.dataset.type;
+
+          const matches =
+            filter === "all" ||
+            (filter === "online" && status === "online") ||
+            (filter === "board" && type === "board") ||
+            (filter === "casual" && type === "casual");
+
+          card.hidden = !matches;
+        });
+      };
+
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          filterButtons.forEach((item) => item.classList.remove("is-active"));
+          button.classList.add("is-active");
+          applyFilter(button.dataset.filter);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>围棋对弈</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">Classic Strategy Board Game</p>
+        <h1>围棋游戏</h1>
+        <p class="intro">
+          支持多棋盘尺寸、双人或人机对弈，并内置更强 AI、规则流派切换、形势判断、棋谱复盘、主题皮肤与多组音效。
+        </p>
+      </section>
+
+      <section class="game-layout">
+        <div class="board-panel">
+          <div class="board-frame">
+            <canvas
+              id="board"
+              width="760"
+              height="760"
+              aria-label="围棋棋盘"
+            ></canvas>
+          </div>
+        </div>
+
+        <aside class="sidebar">
+          <section class="status-card">
+            <div class="turn-badge" id="turnBadge">黑方行棋</div>
+            <h2 id="statusText">请选择交叉点落子</h2>
+            <p id="detailText">黑棋先行。点击棋盘即可开始对弈。</p>
+          </section>
+
+          <section class="settings-card">
+            <div class="card-title-row">
+              <h3>对局设置</h3>
+              <span id="modeHint">切换后将重开棋局</span>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">棋盘尺寸</span>
+              <div class="segmented-control">
+                <button class="segment is-active" data-size="9">9 路</button>
+                <button class="segment" data-size="13">13 路</button>
+                <button class="segment" data-size="19">19 路</button>
+              </div>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">对弈模式</span>
+              <div class="segmented-control">
+                <button class="segment is-active" data-mode="pvp">双人对弈</button>
+                <button class="segment" data-mode="ai">人机对战</button>
+              </div>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">AI 棋力</span>
+              <div class="segmented-control">
+                <button class="segment is-active" data-ai-level="balanced">均衡</button>
+                <button class="segment" data-ai-level="sharp">进攻</button>
+                <button class="segment" data-ai-level="deep">深算</button>
+              </div>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">规则流派</span>
+              <div class="segmented-control">
+                <button class="segment is-active" data-ruleset="cn">中国规则</button>
+                <button class="segment" data-ruleset="jp">日本规则</button>
+              </div>
+            </div>
+            <p class="micro-copy" id="komiText">当前贴目：7.5 目</p>
+          </section>
+
+          <section class="stats-card">
+            <div class="stat-row">
+              <span>黑棋提子</span>
+              <strong id="blackCaptures">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>白棋提子</span>
+              <strong id="whiteCaptures">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>当前手数</span>
+              <strong id="moveCount">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>棋盘规格</span>
+              <strong id="boardLabel">19 路</strong>
+            </div>
+          </section>
+
+          <section class="controls-card">
+            <button id="passButton" class="action-button">停一手</button>
+            <button id="undoButton" class="action-button secondary">悔棋</button>
+            <button id="resetButton" class="action-button ghost">重新开始</button>
+          </section>
+
+          <section class="sgf-card">
+            <div class="card-title-row">
+              <h3>SGF</h3>
+              <span>导入 / 导出</span>
+            </div>
+            <div class="controls-card compact">
+              <button id="exportButton" class="action-button">导出 SGF</button>
+              <button id="importButton" class="action-button secondary">导入 SGF</button>
+              <button id="scoreButton" class="action-button ghost">自动数目</button>
+            </div>
+            <input id="importInput" type="file" accept=".sgf" hidden />
+          </section>
+
+          <section class="score-card">
+            <div class="card-title-row">
+              <h3>局面判断</h3>
+              <span id="scoreTag">实时评估</span>
+            </div>
+            <p id="scoreSummary">当前尚未数目。对局结束后可自动估算胜负。</p>
+            <div class="score-grid">
+              <div class="score-box">
+                <span>黑方</span>
+                <strong id="blackScore">0</strong>
+              </div>
+              <div class="score-box">
+                <span>白方</span>
+                <strong id="whiteScore">0</strong>
+              </div>
+            </div>
+            <div class="score-grid">
+              <div class="score-box">
+                <span>黑方胜率</span>
+                <strong id="blackWinrate">50%</strong>
+              </div>
+              <div class="score-box">
+                <span>白方胜率</span>
+                <strong id="whiteWinrate">50%</strong>
+              </div>
+            </div>
+            <p class="micro-copy" id="phaseText">布局阶段，双方都还有很多展开空间。</p>
+          </section>
+
+          <section class="history-card">
+            <div class="card-title-row">
+              <h3>对局记录</h3>
+              <span id="historyHint">支持点击复盘</span>
+            </div>
+            <div class="controls-card compact review-controls">
+              <button id="prevButton" class="action-button secondary">上一步</button>
+              <button id="nextButton" class="action-button secondary">下一步</button>
+              <button id="liveButton" class="action-button ghost">返回实战</button>
+            </div>
+            <p class="micro-copy" id="reviewStatus">当前处于实时对局视角。</p>
+            <ol id="historyList" class="history-list history-list--interactive"></ol>
+          </section>
+
+          <section class="theme-card">
+            <div class="card-title-row">
+              <h3>主题与音效</h3>
+              <span>离线可用</span>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">主题皮肤</span>
+              <div class="segmented-control">
+                <button class="segment is-active" data-theme="classic">琥珀木纹</button>
+                <button class="segment" data-theme="ink">水墨夜局</button>
+                <button class="segment" data-theme="jade">青玉棋馆</button>
+              </div>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">音效风格</span>
+              <div class="segmented-control">
+                <button class="segment is-active" data-sound="classic">古琴</button>
+                <button class="segment" data-sound="bamboo">竹韵</button>
+                <button class="segment" data-sound="minimal">极简</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="rules-card">
+            <h3>规则说明</h3>
+            <ul>
+              <li id="rulesBoardText">棋盘默认为 19 路，黑棋先行。</li>
+              <li>被完全包围且无气的棋串会被提走。</li>
+              <li>不允许自杀落子，也不允许立即形成劫争还原局面。</li>
+              <li id="rulesetText">当前按中国规则估算，白贴 7.5 目。</li>
+              <li>双方连续停一手后，系统会提示终局并可自动数目。</li>
+              <li>人机模式下由你执黑，AI 执白，支持复盘与导出棋谱。</li>
+            </ul>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
